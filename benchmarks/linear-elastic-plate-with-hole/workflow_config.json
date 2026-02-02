@@ -1,0 +1,12 @@
+{
+    "configuration_to_parameter_file": {
+        "05": "parameters_05.json",
+        "1": "parameters_1.json"
+    },
+    "configurations": [
+        "05",
+        "1"
+    ],
+    "benchmark": "linear-elastic-plate-with-hole",
+    "benchmark_uri": "https://portal.mardi4nfdi.de/wiki/Model:6775296"
+}

@@ -11,3 +11,4 @@ dependencies:
   - pip
   - pip:
       - "git+https://github.com/izus-fokus/snakemake-report-plugin-metadata4ing@v1.0.0#egg=snakemake-report-plugin-metadata4ing"
+      - -e .
