@@ -154,9 +154,10 @@ jobs:
           fi
 
       - name: Upload RoHub error log
-        if: always() && steps.rohub_upload.outputs.upload_failed == 'true'
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: rohub-upload-error-log
           path: rohub_upload_error.log
+          if-no-files-found: ignore
 
