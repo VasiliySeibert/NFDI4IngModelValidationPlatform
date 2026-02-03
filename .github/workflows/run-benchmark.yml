@@ -146,14 +146,15 @@ jobs:
           if [ "$PYTHON_EXIT_CODE" -eq 0 ]; then
             echo "RoHub upload succeeded"
             rm -f "$LOG_FILE" || true
+            echo "upload_failed=false" >> "$GITHUB_OUTPUT"
           else
             echo "=== RoHub upload failed — writing log to $LOG_FILE ==="
             printf '%s\n' "$OUTPUT" | tee "$LOG_FILE"
+            echo "upload_failed=true" >> "$GITHUB_OUTPUT"
           fi
-          echo "python_exit_code=$PYTHON_EXIT_CODE" >> "$GITHUB_ENV"
-      
+              
       - name: Upload RoHub error log
-        if: ${{ env.python_exit_code == '1' }}
+        if: steps.rohub_upload.outputs.upload_failed == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: rohub-upload-error-log
