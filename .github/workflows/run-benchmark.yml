@@ -130,8 +130,8 @@ jobs:
         continue-on-error: true
         run: |
           LOG_FILE=rohub_upload_error.log
-
-          # Run Python and capture stdout+stderr (without creating a file)
+              
+          # Run Python and capture stdout+stderr
           OUTPUT="$(
             python benchmarks/common/upload_provenance.py \
               --provenance_folderpath "./${SNAKEMAKE_RESULT_FILE}.zip" \
@@ -141,14 +141,14 @@ jobs:
             2>&1
           )"
           PYTHON_EXIT_CODE=$?
-
-          # Your script: 0 = failure, 1 = success
-          if [ "$PYTHON_EXIT_CODE" -eq 1 ]; then
-            echo "=== RoHub upload failed — writing log to $LOG_FILE ==="
-            printf '%s\n' "$OUTPUT" | tee "$LOG_FILE"
-          else
+              
+          # Standard convention: 0 = success, non-zero = failure
+          if [ "$PYTHON_EXIT_CODE" -eq 0 ]; then
             echo "RoHub upload succeeded"
             rm -f "$LOG_FILE" || true
+          else
+            echo "=== RoHub upload failed — writing log to $LOG_FILE ==="
+            printf '%s\n' "$OUTPUT" | tee "$LOG_FILE"
           fi
           echo "python_exit_code=$PYTHON_EXIT_CODE" >> "$GITHUB_ENV"
       
