@@ -199,11 +199,11 @@ def main():
     args = parse_args()
     try:
         run(args)
-        sys.exit(1)
-    except Exception as error:
-        print("⚠️ RoHub upload failed:")
-        print(error)
         sys.exit(0)
+    except Exception as error:
+        print("RoHub upload failed:")
+        print(error)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
