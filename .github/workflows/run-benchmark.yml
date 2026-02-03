@@ -129,8 +129,8 @@ jobs:
         shell: bash -l {0}
         continue-on-error: true
         run: |
-          LOG_FILE=rohub_upload_error.log
-
+          LOG_FILE="${GITHUB_WORKSPACE}/rohub_upload_error.log"
+              
           # Run Python and capture stdout+stderr
           OUTPUT="$(
             python benchmarks/common/upload_provenance.py \
@@ -141,18 +141,16 @@ jobs:
             2>&1
           )"
           PYTHON_EXIT_CODE=$?
-
+              
           # Standard convention: 0 = success, non-zero = failure
           if [ "$PYTHON_EXIT_CODE" -eq 0 ]; then
             echo "RoHub upload succeeded"
             rm -f "$LOG_FILE" || true
-            echo "upload_failed=false" >> "$GITHUB_OUTPUT"
           else
             echo "=== RoHub upload failed — writing log to $LOG_FILE ==="
             printf '%s\n' "$OUTPUT" | tee "$LOG_FILE"
-            echo "upload_failed=true" >> "$GITHUB_OUTPUT"
           fi
-
+              
       - name: Upload RoHub error log
         if: always()
         uses: actions/upload-artifact@v4
