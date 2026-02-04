@@ -31,10 +31,10 @@ jobs:
             miniforge-version: latest
             activate-environment: model-validation 
             use-mamba: true
-      - name: Setup Apptainer
-        uses: eWaterCycle/setup-apptainer@v2
-        with:
-          apptainer-version: 1.4.5
+      # - name: Setup Apptainer
+      #   uses: eWaterCycle/setup-apptainer@v2
+      #   with:
+      #     apptainer-version: 1.4.5
       - name: Set strict channel priority
         run: conda config --set channel_priority strict
         

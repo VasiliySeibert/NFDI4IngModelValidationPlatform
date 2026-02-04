@@ -5,6 +5,7 @@ channels:
 dependencies:
   - snakemake
   - nextflow
+  - apptainer
   - pyvista
   - meshio
   - conda-lock
