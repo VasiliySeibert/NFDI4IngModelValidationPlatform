@@ -148,7 +148,7 @@ class ProvenanceAnalyzer:
 
         # Final query
         query = f"""
-        PREFIX schema: <https://schema.org/>
+        PREFIX schema: <http://schema.org/>
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX m4i: <http://w3id.org/nfdi4ing/metadata4ing#>
     
