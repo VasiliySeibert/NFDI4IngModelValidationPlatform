@@ -1,7 +1,16 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
-name = "meshhelper"
+name = "benchmarking"
 version = "0.1.0"
+description = "Repository for model validation and verification"
+authors = [
+    { name="Your Name", email="you@example.com" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+
+[tool.setuptools.packages.find]
+where = ["src"]
