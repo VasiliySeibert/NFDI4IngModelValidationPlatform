@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, List, Dict, Any
+from typing import Optional
 import shutil
 import subprocess
 
@@ -94,7 +94,8 @@ class benchmark:
     def generate_workflow(self, parameter_file: str, configuration: str):
         """
         Generate the Snakemake workflow for the benchmark with the associated tool.
-        
+        parameter_file: The name of the parameter file to be used in the workflow.
+        configuration: The name of the configuration to be used for naming the output directory and files.
         """
         
         ###############################################################################
@@ -140,7 +141,7 @@ class benchmark:
         self.output_dir = self.benchmark_dir / configuration
         self.output_dir.mkdir(parents=True, exist_ok=True)           
             
-        # Copy files from benchmark_dir to self.output_dir, excluding non-matching parameter files
+        # Copy files from benchmark_dir to self.output_dir, excluding non-matching parameter files and workflow template files
         for item in self.benchmark_dir.iterdir():
             if item.is_file():
                 if item.name.startswith("parameters_"):

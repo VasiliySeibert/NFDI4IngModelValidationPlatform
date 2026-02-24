@@ -1,13 +1,19 @@
-import sys
 from pathlib import Path
 import zipfile
 import json
-
-# Add src directory to Python path
-src_path = Path(__file__).resolve().parent.parent.parent.parent / "src"
-sys.path.insert(0, str(src_path))
-
 from benchmarking import benchmark
+
+"""
+The script performs the following steps:
+
+1. Extracts the benchmark files from a zip archive (currently assuming that it is an RO-Crate of the benchmark).
+2. Creates a benchmark object and registers the simulation tool (FEniCS) along with its version and URI.
+3. Adds the simulation script and environment file to the benchmark object.
+4. Iterates through the parameter configuration files, checks the "element-size" value, and if it meets the specified condition (>= 0.025), it generates and executes the Snakemake workflow for that configuration.
+
+The results of each run (and the files used by it) are stored in the directory with the configuration name.
+"""
+
 
 ####################################################################################################
 ####################################################################################################
@@ -51,7 +57,6 @@ linear_elastic_problem.add_tool_scripts(
 for file in unzipped_benchmark_dir.glob("parameters_*.json"):
     with open(file, "r") as f:
         data = json.load(f)
-        print(data.get("element-size").get("value"))
         if data.get("element-size").get("value") >= 0.025:
             linear_elastic_problem.generate_workflow(file.name, data.get("configuration"))
             linear_elastic_problem.run_workflow()
