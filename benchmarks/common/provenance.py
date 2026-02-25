@@ -124,7 +124,8 @@ class ProvenanceAnalyzer:
         )
 
         # Tool block with optional filter
-        tool_block = "?method m4i:implementedByTool ?tool .\n?tool a schema:SoftwareApplication ;\n rdfs:label ?tool_name .\n"
+        tool_predicate = "ssn:implementedBy" if named_graph else "m4i:implementedByTool"
+        tool_block = f"?method {tool_predicate} ?tool .\n?tool a schema:SoftwareApplication ;\n rdfs:label ?tool_name .\n"
         if tools:
             filter_cond = " || ".join(
                 f'CONTAINS(LCASE(?tool_name), "{t.lower()}")' for t in tools
@@ -151,7 +152,8 @@ class ProvenanceAnalyzer:
         PREFIX schema: <http://schema.org/>
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX m4i: <http://w3id.org/nfdi4ing/metadata4ing#>
-    
+        PREFIX ssn: <http://www.w3.org/ns/ssn/>
+        
         SELECT {select_vars} ?tool_name
         WHERE {{
             {where_block}
