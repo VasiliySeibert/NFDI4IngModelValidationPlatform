@@ -39,7 +39,7 @@ if duplicates:
 # Reverse mapping for easy lookup by configuration name
 configuration_to_parameter_file = {v: str(k) for k, v in configurations.items()}
 
-tools = ["fenics"]
+tools = ["kratos"]
 benchmark = "linear-elastic-plate-with-hole"
 benchmark_uri = "https://portal.mardi4nfdi.de/wiki/Model:6775296"
 
