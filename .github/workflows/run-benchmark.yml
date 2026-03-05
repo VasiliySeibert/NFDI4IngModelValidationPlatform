@@ -14,13 +14,12 @@ on:
 
 env:
   CACHE_NUMBER: 1  # increase to reset cache manually
+  SNAKEMAKE_RESULT_FILE: metadata4ing_provenance
+  PROVENANACE_FILE_NAME: element_size_vs_max_mises_stress.pdf
 
 jobs:
-  tests:
+  run-simulation:
     runs-on: ubuntu-latest
-
-
-
     steps:
       - name: checkout repo content
         uses: actions/checkout@v2
@@ -84,7 +83,7 @@ jobs:
 
   process-artifacts:
     runs-on: ubuntu-latest
-    needs: tests
+    needs: run-simulation
     steps:
       - name: Checkout repo content
         uses: actions/checkout@v2
@@ -108,14 +107,60 @@ jobs:
             activate-environment: postprocessing 
             use-mamba: true
             environment-file: benchmarks/linear-elastic-plate-with-hole/environment_postprocessing.yml
+      
+      - name: Validate Snakemake Result File
+        shell: bash -l {0}
+        run: |
+          python benchmarks/common/validate_provenance.py \
+            --provenance_folderpath "./$SNAKEMAKE_RESULT_FILE" 
 
       - name: Run plotting script
         shell: bash -l {0}
         run: |
           python benchmarks/linear-elastic-plate-with-hole/plot_metrics.py ./snakemake_fenics_provenance ./snakemake_kratos_provenance
 
-      - name: Upload PDF plot as artifact
+      - name: Upload snakemake results file as artifact
         uses: actions/upload-artifact@v4
         with:
           name: element-size-vs-stress-plot
-          path: element_size_vs_stress.pdf
+          path: ${{ env.PROVENANACE_FILE_NAME }}
+      
+      - name: Re-zip snakemake result folder
+        run: |
+          cd "./${SNAKEMAKE_RESULT_FILE}"
+          zip -r "../${SNAKEMAKE_RESULT_FILE}.zip" .
+
+      - name: Upload RoCrate Zip file onto RoHub
+        id: rohub_upload
+        shell: bash -l {0}
+        continue-on-error: true
+        run: |
+          LOG_FILE="${GITHUB_WORKSPACE}/rohub_upload_error.log"
+
+          # Run Python and capture stdout+stderr
+          OUTPUT="$(
+            python benchmarks/common/upload_provenance.py \
+              --provenance_folderpath "./${SNAKEMAKE_RESULT_FILE}.zip" \
+              --benchmark_name "linear-elastic-plate-with-hole" \
+              --username "${{ secrets.ROHUB_USERNAME }}" \
+              --password "${{ secrets.ROHUB_PASSWORD }}" \
+            2>&1
+          )"
+          PYTHON_EXIT_CODE=$?
+
+          # Standard convention: 0 = success, non-zero = failure
+          if [ "$PYTHON_EXIT_CODE" -eq 0 ]; then
+            echo "RoHub upload succeeded"
+            rm -f "$LOG_FILE" || true
+          else
+            echo "=== RoHub upload failed — writing log to $LOG_FILE ==="
+            printf '%s\n' "$OUTPUT" | tee "$LOG_FILE"
+          fi
+
+      - name: Upload RoHub error log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rohub-upload-error-log
+          path: ${{ github.workspace }}/rohub_upload_error.log
+          if-no-files-found: ignore
