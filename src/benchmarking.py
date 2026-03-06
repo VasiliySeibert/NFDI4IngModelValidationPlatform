@@ -74,7 +74,7 @@ class benchmark:
         
         
         
-    def add_tool_workflow(self, workflow_file: str):
+    def add_tool_workflow(self, workflow_file: Path):
         """
         Add a Snakemake workflow file for the tool.
         
@@ -82,8 +82,7 @@ class benchmark:
             workflow_file: Path to the Snakemake workflow file
         """
         
-        #if not (Path(self.tool["name"]) / workflow_file).exists():
-        if not Path(workflow_file).exists():
+        if workflow_file.exists():
             raise FileNotFoundError(f"Workflow file not found: {workflow_file}")
 
         self.tool.update({"workflow_file": workflow_file})  
@@ -138,7 +137,7 @@ class benchmark:
                                             .replace("$BENCHMARK_URI$", "https://portal.mardi4nfdi.de/wiki/Model:6775296")
                                             
         
-        self.output_dir = self.benchmark_dir / configuration
+        self.output_dir = self.benchmark_dir / "results" / configuration
         self.output_dir.mkdir(parents=True, exist_ok=True)           
             
         # Copy files from benchmark_dir to self.output_dir, excluding non-matching parameter files and workflow template files
@@ -179,6 +178,14 @@ class benchmark:
         try:
             subprocess.run(["snakemake", "--use-conda", "--force", "--cores", "all", "--conda-prefix", str(self.benchmark_dir / "conda_envs")], check=True, cwd=self.output_dir)
             print("Workflow executed successfully.")
+            
+            #Running the reporter plugin.
+            #subprocess.run(["snakemake", "--use-conda", "--force", "--cores", "all", \ 
+            #                "--reporter", "metadata4ing", \
+            #                "--report-metadata4ing-paramscript", "../common/parameter_extractor.py",\
+            #                "--report-metadata4ing-config", "metadata4ing.config", \
+            #                "--report-metadata4ing-filename", "$SNAKEMAKE_RESULT_FILE"], check=True, cwd=self.output_dir)
+
         except subprocess.CalledProcessError as e:
             print(f"Error occurred while running the workflow: {e}")    
     
