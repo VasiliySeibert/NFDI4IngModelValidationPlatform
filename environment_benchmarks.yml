@@ -4,7 +4,6 @@ channels:
   - bioconda
 dependencies:
   - snakemake
-  - nextflow
   - pyvista
   - meshio
   - conda-lock
@@ -12,3 +11,4 @@ dependencies:
   - pip
   - pip:
       - "git+https://github.com/izus-fokus/snakemake-report-plugin-metadata4ing@v1.2.3#egg=snakemake-report-plugin-metadata4ing"
+      - -e .
