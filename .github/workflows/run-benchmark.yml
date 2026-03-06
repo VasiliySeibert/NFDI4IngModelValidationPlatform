@@ -48,7 +48,7 @@ jobs:
         with:
             name: snakemake_results_linear-elastic-plate-with-hole
             path: |
-              benchmarks/linear-elastic-plate-with-hole/results/
+              examples/linear-elastic-plate-with-hole/fenics/results/
 
 
 
