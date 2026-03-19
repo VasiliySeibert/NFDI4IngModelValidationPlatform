@@ -1,2 +1,4 @@
 .snakemake
 site
+examples/linear-elastic-plate-with-hole/fenics/conda_envs
+examples/linear-elastic-plate-with-hole/linear-elastic-plate-with-hole
