@@ -161,7 +161,7 @@ class benchmark:
         
         
      
-    def run_workflow(self,):
+    def run_workflow(self):
         """
         Run the generated Snakemake workflow.
         """
@@ -180,26 +180,9 @@ class benchmark:
             print("Workflow executed successfully.")
             
             #Running the reporter plugin.
-            #subprocess.run(["snakemake", "--use-conda", "--force", "--cores", "all", \ 
-            #                "--reporter", "metadata4ing", \
-            #                "--report-metadata4ing-paramscript", "../common/parameter_extractor.py",\
-            #                "--report-metadata4ing-config", "metadata4ing.config", \
-            #                "--report-metadata4ing-filename", "$SNAKEMAKE_RESULT_FILE"], check=True, cwd=self.output_dir)
+            subprocess.run(["snakemake", "--use-conda", "--force", "--cores", "all", 
+                           "--reporter", "metadata4ing", 
+                           "--report-metadata4ing-filename", "SubCrate"], check=True, cwd=self.output_dir)
 
         except subprocess.CalledProcessError as e:
-            print(f"Error occurred while running the workflow: {e}")    
-    
-    
-
-    
-
-    
-
-    
-
-
-
-        
-        
-        
-        
+            print(f"Error occurred while running the workflow: {e}")

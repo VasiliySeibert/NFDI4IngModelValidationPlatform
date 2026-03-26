@@ -58,6 +58,6 @@ for file in unzipped_benchmark_dir.glob("parameters_*.json"):
     with open(file, "r") as f:
         data = json.load(f)
         if data.get("element-size").get("value") >= 0.025:
-            linear_elastic_problem.generate_workflow(file.name, data.get("configuration"))
+            configuration = data.get("configuration")
+            linear_elastic_problem.generate_workflow(file.name, configuration)
             linear_elastic_problem.run_workflow()
-           
