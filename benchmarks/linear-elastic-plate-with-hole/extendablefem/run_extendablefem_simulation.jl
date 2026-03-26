@@ -40,24 +40,19 @@ function parse_config(configfile::String)
     return PlateConfig(id,F,E,ν,radius,length,element_order)
 end
 
+const II = [1 0;0 1]
 
-function plane_stress_elasticity_tensor(E::Float64, ν::Float64)
-    G = (1 / (1 + ν)) * E * 0.5
-    λ = (ν / (1 - 2ν)) * 2 * G
-    return @SArray [
-        (λ + 2G) λ 0
-        λ (λ + 2G) 0
-        0 0 G
-    ]
+function sigma!(result,∇u,qpinfo)
+    E = qpinfo.params[1]
+    ν = qpinfo.params[2]
+    ∇u[2] = (∇u[2]+∇u[3])*0.5
+    ∇u[3] = ∇u[2]       
+
+    ε = tensor_view(∇u,1,TDMatrix(2))
+    σ = tensor_view(result,1,TDMatrix(2))    
+    σ.= ((1.0-ν).*ε + ν*tr(ε).*II)*E/(1-ν^2)
 end
 
-
-function make_kernel(𝐂)
-    function LE_kernel_sym!(σ,εv,qpinfo)
-        mul!(σ,𝐂,εv)
-    end 
-    return LE_kernel_sym!
-end
 
 function u_ex_kernel!(result,qpinfo)
     x = qpinfo.x[1]
@@ -103,9 +98,8 @@ function solve_plate_with_hole(config::PlateConfig,grid::ExtendableGrid,outputzi
     PD = ProblemDescription("Linear elastic 2D Plate with hole, configuration "*config.id)
     u = Unknown("u"; name= "displacement")
     assign_unknown!(PD, u)
-    𝐂 = plane_stress_elasticity_tensor(config.E,config.ν)
-    LE_kernel_sym! = make_kernel(𝐂)
-    assign_operator!(PD, BilinearOperator(LE_kernel_sym!, [εV(u,1.0)]))
+    
+    assign_operator!(PD, BilinearOperator(sigma!, [grad(u)];params=[config.E,config.ν]))
     assign_operator!(PD, InterpolateBoundaryData(u, u_ex_kernel!; regions = [3,4], params = [config.radius,config.F,config.E,config.ν]))
     assign_operator!(PD, HomogeneousBoundaryData(u; regions = [1], mask = [1,0]))
     assign_operator!(PD, HomogeneousBoundaryData(u; regions = [2], mask = [0,1]))
