@@ -30,11 +30,26 @@ jobs:
             --doc "docs/benchmarks/linear elasticity/plate-with-hole.md" \
             --notebook notebooks/plate_with_hole_fenics.ipynb
 
-      - name: Commit changes if any
+      - name: Commit and pin Binder URL to commit SHA
         run: |
-          git diff --quiet notebooks/ && echo "No changes" && exit 0
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Commit the merged docs
+          git diff --quiet notebooks/ && echo "No changes" && exit 0
           git add notebooks/
-          git commit -m "Auto-merge docs into notebooks [skip ci]"
+          git commit -m "Auto-merge docs into notebooks"
+
+          # Get the SHA of that commit and re-run with pinned URL
+          SHA=$(git rev-parse HEAD)
+          python scripts/merge_docs_to_notebook.py \
+            --doc "docs/benchmarks/linear elasticity/plate-with-hole.md" \
+            --notebook notebooks/plate_with_hole_fenics.ipynb \
+            --branch "$SHA"
+
+          # Commit the SHA-pinned version
+          git add notebooks/
+          git diff --cached --quiet && echo "No URL change" || \
+            git commit -m "Pin Binder URL to $SHA [skip ci]"
+
           git push
