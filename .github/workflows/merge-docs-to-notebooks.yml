@@ -1,0 +1,40 @@
+name: Merge docs into notebooks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/benchmarks/**'
+      - 'notebooks/**'
+      - 'scripts/merge_docs_to_notebook.py'
+
+  workflow_dispatch:
+
+jobs:
+  merge-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Merge docs into FEniCS notebook
+        run: |
+          python scripts/merge_docs_to_notebook.py \
+            --doc "docs/benchmarks/linear elasticity/plate-with-hole.md" \
+            --notebook notebooks/plate_with_hole_fenics.ipynb
+
+      - name: Commit changes if any
+        run: |
+          git diff --quiet notebooks/ && echo "No changes" && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add notebooks/
+          git commit -m "Auto-merge docs into notebooks [skip ci]"
+          git push
