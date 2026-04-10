@@ -90,7 +90,7 @@ def main() -> None:
     parser.add_argument("--notebook", required=True, help="Path to the notebook file.")
     parser.add_argument(
         "--repo",
-        default="BAMresearch/NFDI4IngModelValidationPlatform",
+        default="VasiliySeibert/NFDI4IngModelValidationPlatform",
         help="GitHub owner/repo.",
     )
     parser.add_argument("--branch", default="main", help="Git branch name.")
