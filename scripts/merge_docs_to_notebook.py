@@ -59,7 +59,7 @@ def has_docs_cell(notebook: dict) -> bool:
     return first_source.startswith(MARKER)
 
 
-def merge(doc_path: str, notebook_path: str, repo: str, branch: str) -> None:
+def merge(doc_path: str, notebook_path: str, repo: str, branch: str, new_path: str) -> None:
     with open(doc_path, "r", encoding="utf-8") as f:
         doc_text = f.read()
 
@@ -77,7 +77,7 @@ def merge(doc_path: str, notebook_path: str, repo: str, branch: str) -> None:
     else:
         notebook["cells"].insert(0, docs_cell)
 
-    with open(notebook_path, "w", encoding="utf-8") as f:
+    with open(new_path, "w", encoding="utf-8") as f:
         json.dump(notebook, f, ensure_ascii=False, indent=1)
         f.write("\n")
 
@@ -94,8 +94,9 @@ def main() -> None:
         help="GitHub owner/repo.",
     )
     parser.add_argument("--branch", default="main", help="Git branch name.")
+    parser.add_argument("--new", required=True, help="Path to the output notebook file.")
     args = parser.parse_args()
-    merge(args.doc, args.notebook, args.repo, args.branch)
+    merge(args.doc, args.notebook, args.repo, args.branch, args.new)
 
 
 if __name__ == "__main__":

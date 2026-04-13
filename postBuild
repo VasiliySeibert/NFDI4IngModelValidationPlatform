@@ -1,0 +1,8 @@
+#!/bin/bash
+
+python3 scripts/merge_docs_to_notebook.py \
+    --doc "docs/benchmarks/linear elasticity/plate-with-hole.md" \
+    --notebook "benchmarks/notebooks/RoCrate.ipynb" \
+    --repo "VasiliySeibert/NFDI4IngModelValidationPlatform" \
+    --branch "main" \
+    --new "notebooks/plate_with_hole.ipynb"
