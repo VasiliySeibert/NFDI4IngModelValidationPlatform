@@ -1,0 +1,5 @@
+#!/bin/bash
+
+touch test_postbuild.txt
+echo "Test the postBuild feature." >> test_postbuild.txt
+
